@@ -90,6 +90,45 @@ struct ReleasesParserTests {
         #expect(releases[0].features[0].colorRepresentation == "#000000")
     }
 
+    @Test("Parsing A Custom Image")
+    func parsingCustomImage() {
+        let markdown = """
+        # 1.0.0
+        ## Test Release
+        ### minor
+
+        - title: Custom Icon
+        - description: Uses an image from the app's asset catalog
+        - image: caddy
+        - color: #34C759
+
+        - title: Newer Symbol
+        - description: Uses the symbol where the OS has it, a copy elsewhere
+        - symbol: pad.header
+        - image: pad.header.copy
+
+        - title: System Icon
+        - description: Uses an SF Symbol
+        - symbol: star
+
+        - title: No Icon
+        - description: Falls back to the default symbol
+        """
+
+        let parser = ReleasesParser(markdown: markdown)
+        let features = parser.releases[0].features
+
+        #expect(features[0].imageName == "caddy")
+        #expect(features[0].symbolName == "")
+        #expect(features[0].colorRepresentation == "#34C759")
+        #expect(features[1].imageName == "pad.header.copy")
+        #expect(features[1].symbolName == "pad.header")
+        #expect(features[2].imageName == nil)
+        #expect(features[2].symbolName == "star")
+        #expect(features[3].imageName == nil)
+        #expect(features[3].symbolName == "heart")
+    }
+
     @Test("Parsing With Escape Sequences")
     func parsingWithEscapeSequences() {
         let markdown = """
