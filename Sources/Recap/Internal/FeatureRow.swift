@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct FeatureRow: View {
     @Environment(\.recapScreenIconFillMode) private var iconFillMode
@@ -12,7 +13,7 @@ struct FeatureRow: View {
                 Color.clear
                     .frame(width: 48.0, height: 48.0)
 
-                Image(systemName: feature.symbolName)
+                self.icon
                     .foregroundStyle(self.iconForegroundStyle)
                     .font(.system(size: 32.0))
             }
@@ -31,6 +32,16 @@ struct FeatureRow: View {
 }
 
 private extension FeatureRow {
+    /// The SF Symbol when this OS has it, otherwise the asset catalog image, so a release can name
+    /// a newer symbol and ship a copy of it for older systems.
+    var icon: Image {
+        if let imageName = self.feature.imageName, UIImage(systemName: self.feature.symbolName) == nil {
+            Image(imageName)
+        } else {
+            Image(systemName: self.feature.symbolName)
+        }
+    }
+
     var iconForegroundStyle: AnyShapeStyle {
         switch self.iconFillMode {
 
