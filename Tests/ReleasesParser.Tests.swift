@@ -99,8 +99,8 @@ struct ReleasesParserTests {
 
         - title: Custom Icon
         - description: Uses an image from the app's asset catalog
-        - image: caddy
-        - color: #34C759
+        - image: custom.icon
+        - color: #FF0000
 
         - title: Newer Symbol
         - description: Uses the symbol where the OS has it, a copy elsewhere
@@ -118,9 +118,9 @@ struct ReleasesParserTests {
         let parser = ReleasesParser(markdown: markdown)
         let features = parser.releases[0].features
 
-        #expect(features[0].imageName == "caddy")
+        #expect(features[0].imageName == "custom.icon")
         #expect(features[0].symbolName == "")
-        #expect(features[0].colorRepresentation == "#34C759")
+        #expect(features[0].colorRepresentation == "#FF0000")
         #expect(features[1].imageName == "pad.header.copy")
         #expect(features[1].symbolName == "pad.header")
         #expect(features[2].imageName == nil)
