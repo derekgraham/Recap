@@ -47,6 +47,7 @@ Your releases are defined in a simple markdown file, with a very simple spec:
 - symbol: [String] (SF Symbol Identifier)
 - color: [String] (Hex Color Code or System Color Name)
 - image: [String] (Optional: a custom symbol or image in your app's asset catalog. Shown when no symbol is given, or when the OS doesn't have the symbol, so you can ship a copy of a newer SF Symbol for older systems)
+- short: [String] (Optional: a shorter description, shown when the full descriptions don't all fit on screen)
 ```
 
 > [!NOTE]

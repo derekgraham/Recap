@@ -6,6 +6,7 @@ struct FeatureRow: View {
     @Environment(\.recapScreenIconAlignment) private var iconAlignment
 
     let feature: Feature
+    var usesShortDescription = false
 
     var body: some View {
         HStack(alignment: iconAlignment, spacing: 16.0) {
@@ -23,7 +24,7 @@ struct FeatureRow: View {
                     .font(.headline)
                     .foregroundStyle(.primary)
 
-                Text(.init(feature.description))
+                Text(.init(self.description))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -32,6 +33,14 @@ struct FeatureRow: View {
 }
 
 private extension FeatureRow {
+    var description: String {
+        if self.usesShortDescription, let shortDescription = self.feature.shortDescription {
+            shortDescription
+        } else {
+            self.feature.description
+        }
+    }
+
     /// The SF Symbol when this OS has it, otherwise the asset catalog image, so a release can name
     /// a newer symbol and ship a copy of it for older systems.
     var icon: Image {

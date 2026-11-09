@@ -129,6 +129,29 @@ struct ReleasesParserTests {
         #expect(features[3].symbolName == "heart")
     }
 
+    @Test("Parsing A Short Description")
+    func parsingShortDescription() {
+        let markdown = """
+        # 1.0.0
+        ## Test Release
+        ### minor
+
+        - title: Long Feature
+        - description: A description that takes several lines on a small screen
+        - short: A brief one
+
+        - title: Brief Feature
+        - description: Already short
+        """
+
+        let parser = ReleasesParser(markdown: markdown)
+        let features = parser.releases[0].features
+
+        #expect(features[0].description == "A description that takes several lines on a small screen")
+        #expect(features[0].shortDescription == "A brief one")
+        #expect(features[1].shortDescription == nil)
+    }
+
     @Test("Parsing With Escape Sequences")
     func parsingWithEscapeSequences() {
         let markdown = """

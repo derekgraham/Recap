@@ -18,19 +18,36 @@ struct ReleaseView: View {
                 .padding(.leading, self.padding.leading)
                 .padding(.trailing, self.padding.trailing)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: self.itemSpacing) {
-                    ForEach(release.features) { feature in
-                        FeatureRow(feature: feature)
-                    }
+            // The full descriptions when they fit, then the short ones, then a scrolling list.
+            ViewThatFits(in: .vertical) {
+                self.features(usingShortDescriptions: false)
+
+                if self.release.features.contains(where: { $0.shortDescription != nil }) {
+                    self.features(usingShortDescriptions: true)
                 }
-                .padding(.leading, self.padding.leading)
-                .padding(.trailing, self.padding.trailing)
+
+                ScrollView {
+                    self.features(usingShortDescriptions: true)
+                }
+                .withSizedBasedBounceBehaviorIfAvailable()
             }
-            .withSizedBasedBounceBehaviorIfAvailable()
+            .frame(maxHeight: .infinity, alignment: .top)
         }
         .padding(.top, self.padding.top)
         .padding(.bottom, self.padding.bottom)
+    }
+}
+
+private extension ReleaseView {
+    func features(usingShortDescriptions: Bool) -> some View {
+        VStack(alignment: .leading, spacing: self.itemSpacing) {
+            ForEach(release.features) { feature in
+                FeatureRow(feature: feature, usesShortDescription: usingShortDescriptions)
+            }
+        }
+        .padding(.leading, self.padding.leading)
+        .padding(.trailing, self.padding.trailing)
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 }
 

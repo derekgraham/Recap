@@ -14,12 +14,17 @@ public struct Feature: Identifiable, Equatable {
     /// symbol that is newer than the OS.
     public let imageName: String?
 
-    public init(title: String, description: String, symbolName: String, colorRepresentation: String, imageName: String? = nil) {
+    /// A shorter description, shown when the release's features don't fit on screen with their
+    /// full descriptions.
+    public let shortDescription: String?
+
+    public init(title: String, description: String, symbolName: String, colorRepresentation: String, imageName: String? = nil, shortDescription: String? = nil) {
         self.title = title
         self.description = description
         self.symbolName = symbolName
         self.colorRepresentation = colorRepresentation
         self.imageName = imageName
+        self.shortDescription = shortDescription
     }
 }
 
