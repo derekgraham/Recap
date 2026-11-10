@@ -17,6 +17,7 @@ import Foundation
 /// - symbol: swift
 /// - color: FF0000
 /// - image: CustomSymbol (optional: an asset catalog image, shown when the OS lacks the symbol or none is given)
+/// - short: Shorter description (optional: shown when the full descriptions don't fit on screen)
 /// ```
 ///
 /// Usage:
@@ -54,7 +55,7 @@ private extension ReleasesParser {
         var releases: [Release] = []
         var currentFeatures: [Feature] = []
         var currentRelease: (version: String, title: String, type: String)?
-        var currentFeature: (title: String, description: String, symbol: String?, color: String?, image: String?)?
+        var currentFeature: (title: String, description: String, symbol: String?, color: String?, image: String?, short: String?)?
 
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
@@ -69,7 +70,7 @@ private extension ReleasesParser {
                 currentRelease?.type = changeType
             } else if let title = self.parseTitle(trimmedLine) {
                 self.finalizeFeature(&currentFeatures, &currentFeature)
-                currentFeature = (Self.parseEscapeSequences(title), "", nil, nil, nil)
+                currentFeature = (Self.parseEscapeSequences(title), "", nil, nil, nil, nil)
             } else if let description = self.parseDescription(trimmedLine) {
                 currentFeature?.description = Self.parseEscapeSequences(description)
             } else if let symbolName = self.parseSymbol(trimmedLine) {
@@ -78,6 +79,8 @@ private extension ReleasesParser {
                 currentFeature?.color = color
             } else if let imageName = self.parseImage(trimmedLine) {
                 currentFeature?.image = imageName
+            } else if let shortDescription = self.parseShortDescription(trimmedLine) {
+                currentFeature?.short = Self.parseEscapeSequences(shortDescription)
             }
         }
 
@@ -119,6 +122,10 @@ private extension ReleasesParser {
         self.parseToken(line, token: "- image: ")
     }
 
+    func parseShortDescription(_ line: String) -> String? {
+        self.parseToken(line, token: "- short: ")
+    }
+
     func parseToken(_ line: String, token: String) -> String? {
         if line.starts(with: token) {
             return String(line.dropFirst(token.count))
@@ -127,7 +134,7 @@ private extension ReleasesParser {
         }
     }
 
-    private func finalizeFeature(_ features: inout [Feature], _ currentFeature: inout (title: String, description: String, symbol: String?, color: String?, image: String?)?) {
+    private func finalizeFeature(_ features: inout [Feature], _ currentFeature: inout (title: String, description: String, symbol: String?, color: String?, image: String?, short: String?)?) {
         if let feature = currentFeature {
             features.append(
                 Feature(
@@ -135,7 +142,8 @@ private extension ReleasesParser {
                     description: feature.description,
                     symbolName: feature.symbol ?? (feature.image == nil ? "heart" : ""),
                     colorRepresentation: feature.color ?? "#000000",
-                    imageName: feature.image
+                    imageName: feature.image,
+                    shortDescription: feature.short
                 )
             )
             currentFeature = nil
