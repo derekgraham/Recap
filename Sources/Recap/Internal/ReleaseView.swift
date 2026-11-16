@@ -1,6 +1,8 @@
 import SwiftUI
 
-struct ReleaseView: View {
+/// Nonisolated: SwiftUI's async renderer can lay this out off the main thread
+/// (see ReleasePages in RecapScreen.swift).
+nonisolated struct ReleaseView: View {
     @Environment(\.recapScreenPadding) private var padding: EdgeInsets
     @Environment(\.recapScreenHeaderSpacing) private var titleSpacing: CGFloat
     @Environment(\.recapScreenTitleStyle) private var titleStyle: AnyShapeStyle

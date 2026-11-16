@@ -54,11 +54,7 @@ public struct RecapScreen<LeadingView: View, TrailingView: View>: View {
                         .tag(self.leadingPageIndex)
                 }
 
-                ForEach(Array(self.displayedReleases.enumerated()), id: \.element.id) { index, release in
-                    ReleaseView(release: release)
-                        .padding(.bottom, 32.0)
-                        .tag(self.releasePageIndex(for: index))
-                }
+                ReleasePages(releases: self.displayedReleases, firstTag: self.releasePageIndex(for: 0))
 
                 if self.hasTrailingPage {
                     self.trailingView
@@ -144,20 +140,10 @@ private extension RecapScreen {
 	}
 
 	var pageIndicators: some View {
-		HStack(spacing: 10.0) {
-			ForEach(Array(0..<self.totalPageCount), id: \.self) { index in
-				Button(action: {
-					withAnimation {
-						self.selectedIndex = index
-					}
-				}, label: {
-					Circle()
-						.fill(index == self.selectedIndex ? self.selectedPageIndicatorColor : self.deselectedPageIndicatorColor)
-						.frame(width: 8.0, height: 8.0)
-				})
-				.buttonStyle(.plain)
-			}
-		}
+		PageIndicators(count: self.totalPageCount,
+		               selectedIndex: self.$selectedIndex,
+		               selectedColor: self.selectedPageIndicatorColor,
+		               deselectedColor: self.deselectedPageIndicatorColor)
 	}
 
 	var dismissButton: some View {
@@ -430,6 +416,51 @@ private extension View {
             self
         } else {
             self.padding(.bottom, 24.0)
+        }
+    }
+}
+
+// MARK: ReleasePages
+
+/// The release pages, built outside the main actor: SwiftUI's async renderer can
+/// evaluate a ForEach's rows off the main thread, and in Swift 6 a main-actor
+/// closure run there traps (iPadOS 26 crash, 2026-11-16).
+private nonisolated struct ReleasePages: View {
+    let releases: [Release]
+    let firstTag: Int
+
+    var body: some View {
+        ForEach(Array(self.releases.enumerated()), id: \.element.id) { index, release in
+            ReleaseView(release: release)
+                .padding(.bottom, 32.0)
+                .tag(self.firstTag + index)
+        }
+    }
+}
+
+// MARK: PageIndicators
+
+/// The page dots, built outside the main actor for the same reason as ReleasePages.
+private nonisolated struct PageIndicators: View {
+    let count: Int
+    let selectedIndex: Binding<Int>
+    let selectedColor: Color
+    let deselectedColor: Color
+
+    var body: some View {
+        HStack(spacing: 10.0) {
+            ForEach(Array(0..<self.count), id: \.self) { index in
+                Button(action: {
+                    withAnimation {
+                        self.selectedIndex.wrappedValue = index
+                    }
+                }, label: {
+                    Circle()
+                        .fill(index == self.selectedIndex.wrappedValue ? self.selectedColor : self.deselectedColor)
+                        .frame(width: 8.0, height: 8.0)
+                })
+                .buttonStyle(PlainButtonStyle())
+            }
         }
     }
 }
