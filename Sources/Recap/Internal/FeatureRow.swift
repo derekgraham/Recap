@@ -1,7 +1,9 @@
 import SwiftUI
 import UIKit
 
-struct FeatureRow: View {
+/// Nonisolated: SwiftUI's async renderer can lay this out off the main thread
+/// (see ReleasePages in RecapScreen.swift).
+nonisolated struct FeatureRow: View {
     @Environment(\.recapScreenIconFillMode) private var iconFillMode
     @Environment(\.recapScreenIconAlignment) private var iconAlignment
 
